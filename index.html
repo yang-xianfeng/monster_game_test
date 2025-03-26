@@ -1,170 +1,555 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monster Survivors - Fight Endless Waves of Monsters</title>
-    <meta name="description" content="Survive endless waves of monsters in this action-packed roguelike game. Upgrade your character, collect powerful items, and face increasingly difficult challenges.">
-    <link rel="canonical" href="https://monstersurvivors.com">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        apple: {
-                            blue: '#007AFF',
-                            red: '#FF3B30',
-                            green: '#34C759',
-                            purple: '#AF52DE',
-                            yellow: '#FFCC00',
-                            orange: '#FF9500',
-                            dark: '#1C1C1E',
-                            gray: '#8E8E93',
-                            lightgray: '#F2F2F7'
-                        }
-                    }
-                }
+    <title>发送文字或文件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #007AFF;
+            --warning-color: #FFD700;
+            --border-radius: 14px;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            color: #1d1d1f;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            background-color: #fff;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            border: 1px solid #e0e0e0;
+            font-size: 1rem;
+            color: #1d1d1f;
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .content-area {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: calc(var(--border-radius) - 4px);
+            resize: vertical;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color var(--transition-speed);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: calc(var(--border-radius) - 4px);
+            padding: 40px 20px;
+            text-align: center;
+            transition: all var(--transition-speed);
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: #f8f9fa;
+        }
+
+        .upload-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 20px auto;
+            display: block;
+            transition: all var(--transition-speed);
+            opacity: 0.5;
+            pointer-events: none;
+            width: fit-content;
+        }
+
+        .upload-button.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .upload-button.active:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .warning-text {
+            background-color: var(--warning-color);
+            color: #000;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin: 24px 0;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .agreement {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            padding: 16px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+            width: 20px;
+            height: 20px;
+        }
+
+        .agreement input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: all var(--transition-speed);
+        }
+
+        .agreement input[type="checkbox"]:checked ~ .checkmark {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .agreement input[type="checkbox"]:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .agreement-text {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .agreement-text a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .result {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .verification-input {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: calc(var(--border-radius) - 4px);
+            width: 200px;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 8px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        #verificationSection .upload-button {
+            display: block;
+            margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 16px;
+            }
+
+            .header {
+                font-size: 1.25rem;
+                padding: 1.5rem 0;
+            }
+
+            .content-area {
+                padding: 16px;
+            }
+
+            .tabs {
+                gap: 8px;
+            }
+
+            .tab {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .upload-area {
+                padding: 20px;
+            }
+
+            .agreement {
+                padding: 12px;
             }
         }
-    </script>
-    <style type="text/css">
-        @media (max-width: 640px) {
-            .game-container {
-                height: 70vh;
-            }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .verify-code-input {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            width: 150px;
+            font-size: 1rem;
+        }
+
+        .verify-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            margin-left: 8px;
         }
     </style>
 </head>
-<body class="bg-apple-lightgray text-apple-dark">
-    <header class="bg-apple-blue text-white p-4 md:p-6 shadow-md">
-        <div class="container mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="text-center md:text-left mb-4 md:mb-0">
-                    <h1 class="text-3xl md:text-4xl font-bold">Monster Survivors</h1>
-                    <p class="text-lg mt-2">Survive and fight against endless waves of monsters!</p>
+<body>
+    <div class="header-container">
+        <h1 class="header">发送文字或文件</h1>
+        <div class="verify-section">
+            <input type="text" class="verify-code-input" id="headerVerifyCode" placeholder="输入验证码">
+            <button class="verify-button" onclick="verifyAndShowContent()">接收</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('text')">文字</div>
+            <div class="tab" onclick="switchTab('file')">文件</div>
+        </div>
+
+        <div class="content-area">
+            <div id="textSection">
+                <textarea id="textInput" placeholder="请输入或粘贴文字内容..."></textarea>
+            </div>
+
+            <div id="fileSection" style="display: none;">
+                <div class="upload-area" onclick="triggerFileInput()">
+                    <p>点击或拖拽文件到此处</p>
+                    <input type="file" id="fileInput" style="display: none">
                 </div>
-                <nav>
-                    <ul class="flex space-x-4">
-                        <li><a href="#game" class="hover:text-apple-yellow transition-colors">Play Now</a></li>
-                        <li><a href="#about" class="hover:text-apple-yellow transition-colors">About</a></li>
-                        <li><a href="#features" class="hover:text-apple-yellow transition-colors">Features</a></li>
-                        <li><a href="#controls" class="hover:text-apple-yellow transition-colors">Controls</a></li>
-                    </ul>
-                </nav>
+            </div>
+
+            <button id="sendButton" class="upload-button" onclick="handleSend()">发送</button>
+            
+            <div class="agreement">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="agreementCheckbox" onchange="updateSendButton()">
+                    <span class="checkmark"></span>
+                </label>
+                <span class="agreement-text">
+                    同意<a href="#" target="_blank">《用户服务协议》</a>、<a href="#" target="_blank">《用户隐私政策》</a>
+                </span>
+            </div>
+
+            <div class="warning-text">
+                发送违法、违规等有害信息，会承担法律责任。
+            </div>
+
+            <div id="result" class="result">
+                <h3>分享链接</h3>
+                <p>链接：<span id="shareLink"></span></p>
+                <p>验证码：<span id="verificationCode"></span></p>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="container mx-auto p-4 md:p-6">
-        <section id="game" class="my-8">
-            <h2 class="text-2xl md:text-3xl font-bold mb-4 text-apple-blue">Play Monster Survivors</h2>
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="game-container w-full h-screen max-h-[600px]">
-                    <iframe src="https://imasdk.googleapis.com/js/core/bridge3.689.6_en.html#fid=goog_8431742" 
-                            class="w-full h-full border-0" 
-                            allowfullscreen></iframe>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="my-12">
-            <h2 class="text-2xl md:text-3xl font-bold mb-4 text-apple-blue">About Monster Survivors</h2>
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <p class="mb-4">Monster Survivors is an action-packed roguelike survival game where you must fight against endless waves of monsters. Each run is unique, with random enemy spawns, power-ups, and challenges to overcome.</p>
-                <p>Inspired by games like Vampire Survivors, this game combines fast-paced action with strategic character building. How long can you survive as the difficulty continuously increases?</p>
-            </div>
-        </section>
-
-        <section id="features" class="my-12">
-            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-apple-blue">Game Features</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-apple-orange mb-3">Multiple Characters</h3>
-                    <p>Choose from various characters, each with unique starting weapons and abilities.</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-apple-green mb-3">Weapon Evolution</h3>
-                    <p>Combine weapons and passive items to create powerful evolved weapons with special effects.</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-apple-purple mb-3">Level Up System</h3>
-                    <p>Gain experience by defeating enemies and level up to choose new weapons or upgrades.</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-apple-red mb-3">Boss Battles</h3>
-                    <p>Face off against massive boss monsters that appear at specific time intervals.</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-apple-yellow mb-3">Treasure Chests</h3>
-                    <p>Find and open treasure chests to receive random items, gold, or special power-ups.</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-apple-blue mb-3">Daily Challenges</h3>
-                    <p>Complete daily challenges to earn rewards and climb the global leaderboard.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="controls" class="my-12">
-            <h2 class="text-2xl md:text-3xl font-bold mb-4 text-apple-blue">Game Controls</h2>
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <h3 class="text-xl font-semibold text-apple-purple mb-3">Keyboard Controls</h3>
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li><span class="font-semibold">WASD or Arrow Keys:</span> Move your character</li>
-                            <li><span class="font-semibold">Space:</span> Pause the game</li>
-                            <li><span class="font-semibold">E or Enter:</span> Select/Confirm</li>
-                            <li><span class="font-semibold">Esc:</span> Back/Menu</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-semibold text-apple-orange mb-3">Mobile Controls</h3>
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li><span class="font-semibold">Virtual Joystick:</span> Appears on the left side of the screen for movement</li>
-                            <li><span class="font-semibold">Tap Buttons:</span> Menu and action buttons on the right side</li>
-                            <li><span class="font-semibold">Swipe:</span> Navigate menus and selection screens</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-apple-dark text-white p-6">
-        <div class="container mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <p>&copy; 2025 Monster Survivors. All rights reserved.</p>
-                </div>
-                <div class="flex space-x-4">
-                    <a href="#" class="hover:text-apple-blue transition-colors">Privacy Policy</a>
-                    <a href="#" class="hover:text-apple-blue transition-colors">Terms of Service</a>
-                    <a href="#" class="hover:text-apple-blue transition-colors">Contact</a>
-                </div>
-            </div>
+    <div id="verificationSection" style="display: none;" class="main-container">
+        <div class="content-area">
+            <h2 style="text-align: center; margin-bottom: 20px;">验证访问</h2>
+            <input type="text" class="verification-input" id="codeInput" placeholder="验证码" maxlength="4">
+            <button class="upload-button active" onclick="verifyCode()">验证</button>
+            <div id="sharedContent" class="result"></div>
         </div>
-    </footer>
+    </div>
 
-    <!-- JSON-LD structured data for SEO -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "VideoGame",
-        "name": "Monster Survivors",
-        "description": "Survive endless waves of monsters in this action-packed roguelike game. Upgrade your character, collect powerful items, and face increasingly difficult challenges.",
-        "genre": ["Action", "Roguelike", "Survival"],
-        "playMode": "SinglePlayer",
-        "applicationCategory": "Game",
-        "url": "https://monstersurvivors.com",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock"
+    <script>
+        function generateCode() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
         }
-    }
+
+        function encodeData(data, type) {
+            const jsonData = {
+                type: type,
+                content: data,
+                timestamp: new Date().getTime()
+            };
+            return btoa(JSON.stringify(jsonData));
+        }
+
+        function decodeData(encodedData) {
+            try {
+                return JSON.parse(atob(encodedData));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const sharedTexts = new Map();
+
+        function updateSendButton() {
+            const checkbox = document.getElementById('agreementCheckbox');
+            const sendButton = document.getElementById('sendButton');
+            sendButton.classList.toggle('active', checkbox.checked);
+        }
+
+        function switchTab(type) {
+            const textSection = document.getElementById('textSection');
+            const fileSection = document.getElementById('fileSection');
+            const tabs = document.querySelectorAll('.tabs .tab');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            if (type === 'text') {
+                textSection.style.display = 'block';
+                fileSection.style.display = 'none';
+                tabs[0].classList.add('active');
+            } else {
+                textSection.style.display = 'none';
+                fileSection.style.display = 'block';
+                tabs[1].classList.add('active');
+            }
+        }
+
+        function triggerFileInput() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleSend() {
+            if (!document.getElementById('agreementCheckbox').checked) {
+                alert('请先同意用户协议和隐私政策');
+                return;
+            }
+
+            const activeTab = document.querySelector('.tabs .tab.active').textContent;
+            if (activeTab === '文字') {
+                shareText();
+            } else {
+                shareFile();
+            }
+        }
+
+        function shareText() {
+            const text = document.getElementById('textInput').value;
+            if (!text) {
+                alert('请输入要分享的文字！');
+                return;
+            }
+
+            const code = generateCode();
+            const encodedData = encodeData(text, 'text');
+            const shareUrl = `${window.location.href}?data=${encodedData}&code=${code}`;
+            
+            document.getElementById('shareLink').textContent = shareUrl;
+            document.getElementById('verificationCode').textContent = code;
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function shareFile() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('请选择要分享的文件！');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const code = generateCode();
+                const encodedData = encodeData(e.target.result, 'file');
+                const shareUrl = `${window.location.href}?data=${encodedData}&code=${code}`;
+                
+                document.getElementById('shareLink').textContent = shareUrl;
+                document.getElementById('verificationCode').textContent = code;
+                document.getElementById('result').style.display = 'block';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function verifyCode() {
+            const code = document.getElementById('codeInput').value;
+            const text = sharedTexts.get(code);
+            
+            if (text) {
+                document.getElementById('sharedContent').innerHTML = `<h3>分享的内容：</h3><p>${text}</p>`;
+                document.getElementById('sharedContent').style.display = 'block';
+            } else {
+                alert('验证码无效或已过期！');
+            }
+        }
+
+        function verifyAndShowContent() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+            const urlCode = urlParams.get('code');
+            const inputCode = document.getElementById('headerVerifyCode').value;
+
+            if (inputCode === urlCode) {
+                const decodedData = decodeData(encodedData);
+                if (decodedData) {
+                    const mainContainer = document.querySelector('.main-container');
+                    mainContainer.innerHTML = '';
+
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'content-area';
+
+                    if (decodedData.type === 'text') {
+                        contentDiv.innerHTML = `<h3>分享的文字内容：</h3><p>${decodedData.content}</p>`;
+                    } else if (decodedData.type === 'file') {
+                        contentDiv.innerHTML = `
+                            <h3>分享的文件内容：</h3>
+                            <img src="${decodedData.content}" style="max-width: 100%; height: auto;">
+                        `;
+                    }
+
+                    mainContainer.appendChild(contentDiv);
+                } else {
+                    alert('数据格式错误！');
+                }
+            } else {
+                alert('验证码错误！');
+            }
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            
+            if (code) {
+                document.querySelector('.main-container').style.display = 'none';
+                document.getElementById('verificationSection').style.display = 'block';
+                document.getElementById('codeInput').value = code;
+            }
+            updateSendButton();
+        }
+
+        // 处理文件拖放
+        const uploadArea = document.querySelector('.upload-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            uploadArea.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            uploadArea.style.backgroundColor = '#f8f9fa';
+        }
+
+        function unhighlight(e) {
+            uploadArea.style.borderColor = '#e0e0e0';
+            uploadArea.style.backgroundColor = '';
+        }
+
+        uploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            document.getElementById('fileInput').files = files;
+        }
     </script>
 </body>
 </html>
